@@ -47,7 +47,9 @@ class GaussianDiffusionTrainer(nn.Module):
         if is_lin:
             betas_tensor = torch.linspace(beta_1, beta_T, T + 1)
             alphas = 1 - betas_tensor
-            alphas_cumprod = torch.cumprod(alphas)
+            print(alphas)
+            alphas_cumprod = torch.cumprod(alphas, dim=0)
+            print(alphas_cumprod)
             sqrt_alphas_tensor = torch.sqrt(alphas_cumprod)
             sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod)
         else:
@@ -115,18 +117,18 @@ class GaussianDiffusionTrainer(nn.Module):
         # self.model(x_t, t, labels)
         predict = self.model(x_t.cuda(), timesteps.cuda(), labels.cuda())
 
-        # for batch_i in range(batch_size):
-        #     x_0_bi = x_0[batch_i]
-        #     x_t_bi = x_t[batch_i]
-        #     pred_bi = predict[batch_i]
+        for batch_i in range(batch_size):
+            x_0_bi = x_0[batch_i]
+            x_t_bi = x_t[batch_i]
+            pred_bi = predict[batch_i]
 
-        #     x_0_img = to_image(x_0_bi)
-        #     x_t_img = to_image(x_t_bi)
-        #     pred_img = to_image(pred_bi)
+            x_0_img = to_image(x_0_bi)
+            x_t_img = to_image(x_t_bi)
+            pred_img = to_image(pred_bi)
 
-        #     x_0_img.save('ImgOutputs/x_0-' + str(batch_i) + '.png')
-        #     x_t_img.save('ImgOutputs/x_t-' + str(batch_i) + '.png')
-        #     pred_img.save('ImgOutputs/pred-' + str(batch_i) + '.png')
+            x_0_img.save('ImgOutputs/x_0-' + str(batch_i) + '.png')
+            x_t_img.save('ImgOutputs/x_t-' + str(batch_i) + '.png')
+            pred_img.save('ImgOutputs/pred-' + str(batch_i) + '.png')
 
         
         # Compute your loss for model prediction and ground truth noise (that you just generated)
