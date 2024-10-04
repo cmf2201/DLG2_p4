@@ -47,18 +47,19 @@ class GaussianDiffusionTrainer(nn.Module):
         if is_lin:
             betas_tensor = torch.linspace(beta_1, beta_T, T + 1)
             alphas = 1 - betas_tensor
-            sqrt_alphas_tensor = torch.sqrt(alphas)
-            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas)
+            alphas_cumprod = torch.cumprod(alphas)
+            sqrt_alphas_tensor = torch.sqrt(alphas_cumprod)
+            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod)
         else:
             range_tensor = torch.linspace(beta_1, beta_T, T + 1)
 
             alpha_t = torch.cos((range_tensor/T + s)/(1 + s) * (torch.pi / 2)) ** 2
             alpha_0 = alpha_t[0]
 
-            alphas = alpha_t / alpha_0
-            betas_tensor = torch.clip(1 - alphas[1:] / alphas[:-1], 0, 0.999)
-            sqrt_alphas_tensor = torch.sqrt(alphas)
-            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas)
+            alphas_cumprod = alpha_t / alpha_0
+            betas_tensor = torch.clip(1 - alphas_cumprod[1:] / alphas_cumprod[:-1], 0, 0.999)
+            sqrt_alphas_tensor = torch.sqrt(alphas_cumprod)
+            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod)
         
         # Precompute and store the parameters for performing noise addition for a given timestep. CHECK
         
@@ -82,15 +83,8 @@ class GaussianDiffusionTrainer(nn.Module):
         """
         batch_size = x_0.size(dim=0)
 
-        for i in range(batch_size):
-            orig_tensor = x_0[i]
-            print('\n x_0 tensor batch ' + str(i) + ': ')
-            print(orig_tensor)
-            orig_img = to_image(orig_tensor)
-            orig_img.save('ImgOutputs/original-' + str(i) + '.png')
-
         # pick batched random timestep below self.T. (torch.Size([batch_size]))
-        timesteps = torch.randint(low=0, high=(self.T + 1), size=(1,batch_size))[0]
+        timesteps = torch.randint(low=1, high=(self.T + 1), size=(1,batch_size))[0]
 
         # Generate random noise from normal distribution with 0 mean and 1 variance (torch.Size([batch_size, 3, 32, 32])
         zeros = torch.zeros(size=(batch_size, 3, 32, 32))
