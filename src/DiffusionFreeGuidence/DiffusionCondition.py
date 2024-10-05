@@ -18,22 +18,23 @@ def extract(v, t, x_shape):
     out = torch.gather(v, index=t, dim=0).float().to(device)
     return out.view([t.shape[0]] + [1] * (len(x_shape) - 1))
 
-def iterative_process(input, normal, beta, sqrt_alpha):
-    # input [3x32x32]
-    # output [3x32x32]
-    # normal = [3x32x32]
-    # beta = [1]
-    # sqrt_alpha = [1]
+# def iterative_process(input, normal, one_minus_alpha, sqrt_alpha):
+#     # input [3x32x32]
+#     # output [3x32x32]
+#     # normal = [3x32x32]
+#     # one_minus_alpha = [1]
+#     # sqrt_alpha = [1]
 
-    varience = beta * torch.eye(32).cuda()
+#     varience = one_minus_alpha * torch.eye(32).cuda()
 
-    std = torch.square(varience).cuda()
-    mean = input * sqrt_alpha
+#     std = torch.square(varience).cuda()
+#     mean = input * sqrt_alpha
 
-    output = normal * std + mean
+#     output = normal * std + mean
+#     print(output)
 
-    del varience, std, mean
-    return output
+#     del varience, std, mean
+#     return output
 
 class GaussianDiffusionTrainer(nn.Module):
     def __init__(self, model, beta_1, beta_T, T):
@@ -45,11 +46,9 @@ class GaussianDiffusionTrainer(nn.Module):
         
         # YOUR IMPLEMENTATION HERE!
         if is_lin:
-            betas_tensor = torch.linspace(beta_1, beta_T, T + 1)
+            betas_tensor = torch.linspace(beta_1, beta_T, T)
             alphas = 1 - betas_tensor
-            print(alphas)
             alphas_cumprod = torch.cumprod(alphas, dim=0)
-            print(alphas_cumprod)
             sqrt_alphas_tensor = torch.sqrt(alphas_cumprod)
             sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod)
         else:
@@ -86,49 +85,79 @@ class GaussianDiffusionTrainer(nn.Module):
         batch_size = x_0.size(dim=0)
 
         # pick batched random timestep below self.T. (torch.Size([batch_size]))
-        timesteps = torch.randint(low=1, high=(self.T + 1), size=(1,batch_size))[0]
+        timesteps = torch.randint(low=1, high=(self.T), size=(1,batch_size))[0]
 
         # Generate random noise from normal distribution with 0 mean and 1 variance (torch.Size([batch_size, 3, 32, 32])
-        zeros = torch.zeros(size=(batch_size, 3, 32, 32))
-        ones = torch.ones(size=(batch_size, 3, 32, 32))
-        normal_distributions = torch.normal(zeros, ones).cuda()
+        normal = torch.randn_like(x_0).cuda()
+
         # Compute the x_t (images obtained after corrupting the input images by t times)  (torch.Size([batch_size, 3, 32, 32])
-        """for loop or no? is there a torch function"""
-        x_t_list = []
+        """batch then iteration"""
         for batch_i in range(batch_size):
             # get important values for equation
             t = timesteps[batch_i]
-            orig_image = x_0[batch_i]
-            normal = normal_distributions[batch_i]
-            betas = self.betas[:t]
-            sqrt_alphas = self.sqrt_alphas_bar[:t]
-            
-            x_t_minus_1 = orig_image
+            x_O = x_0[batch_i]
+            epsilon = normal[batch_i]
+            sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
+            sqrt_alphas_bar = self.sqrt_alphas_bar[t]
 
-            for iter in range(t):
-                beta = betas[iter]
-                sqrt_alpha = sqrt_alphas[iter]
-                x_t_minus_1 = iterative_process(x_t_minus_1, normal, beta, sqrt_alpha) # NOT WORKING YET
-            x_t_list.append(x_t_minus_1.detach()) # No gradients for this right? this is ground truth?
-        
-        x_t = torch.stack(x_t_list).cuda()
+            for j in range(100):
+                t = (j + 1) * 10 - 1
+                sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
+                sqrt_alphas_bar = self.sqrt_alphas_bar[t]
+
+                x_t = sqrt_alphas_bar * x_O + sqrt_one_minus_alphas_bar * epsilon
+
+                pred = self.model(x_t, t, labels[batch_i])
+                pred_img = to_image(pred)
+                pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-ground_truth.png')
+
+                x_t_img = to_image(x_t)
+                x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-pred.png')
+
+                diff = x_t - pred
+                diff_img = to_image(diff)
+                diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-diff.png')
+        '''iteration to batch'''
+        # for i in range(100):
+        #     t = (i + 1) * 10 - 1
+        #     sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
+        #     sqrt_alphas_bar = self.sqrt_alphas_bar[t]
+
+        #     x_t = sqrt_alphas_bar * x_0 + sqrt_one_minus_alphas_bar * normal
+
+        #     timesteps = torch.Tensor([t, t, t, t]).to(torch.int).cuda()
+
+        #     predict = self.model(x_t, timesteps, labels)
+
+        #     for batch_i in range(batch_size):
+        #         x_t_bi = x_t[batch_i]
+        #         pred_bi = predict[batch_i]
+        #         diff_bi = abs(x_t_bi - pred_bi)
+
+        #         x_t_img = to_image(x_t_bi)
+        #         pred_img = to_image(pred_bi)
+        #         diff_img = to_image(diff_bi)
+
+        #         x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'truth.png')
+        #         pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'pred.png')
+        #         diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'diff.png')
+
 
         # Call your diffusion model to get the predict the noise -  t is a random index
         # self.model(x_t, t, labels)
-        predict = self.model(x_t.cuda(), timesteps.cuda(), labels.cuda())
 
-        for batch_i in range(batch_size):
-            x_0_bi = x_0[batch_i]
-            x_t_bi = x_t[batch_i]
-            pred_bi = predict[batch_i]
+        # for batch_i in range(batch_size):
+        #     x_0_bi = x_0[batch_i]
+        #     x_t_bi = x_t[batch_i]
+        #     pred_bi = predict[batch_i]
 
-            x_0_img = to_image(x_0_bi)
-            x_t_img = to_image(x_t_bi)
-            pred_img = to_image(pred_bi)
+        #     x_0_img = to_image(x_0_bi)
+        #     x_t_img = to_image(x_t_bi)
+        #     pred_img = to_image(pred_bi)
 
-            x_0_img.save('ImgOutputs/x_0-' + str(batch_i) + '.png')
-            x_t_img.save('ImgOutputs/x_t-' + str(batch_i) + '.png')
-            pred_img.save('ImgOutputs/pred-' + str(batch_i) + '.png')
+        #     x_0_img.save('ImgOutputs/x_0-' + str(batch_i) + '.png')
+        #     x_t_img.save('ImgOutputs/x_t-' + str(batch_i) + '.png')
+        #     pred_img.save('ImgOutputs/pred-' + str(batch_i) + '.png')
 
         
         # Compute your loss for model prediction and ground truth noise (that you just generated)

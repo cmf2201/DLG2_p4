@@ -6,7 +6,7 @@ def main(model_config = None):
         "state": "train", # or eval
         "epoch": 200,
         "batch_size": 4,
-        "T": 100,
+        "T": 1000,
         "channel": 128,
         "channel_mult": [1, 2, 3, 4],
         "attn": [2],
