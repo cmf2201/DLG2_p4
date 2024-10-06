@@ -1,4 +1,4 @@
-from Diffusion.Train import train, eval
+from DiffusionFreeGuidence.TrainCondition import train, eval
 
 
 def main(model_config = None):

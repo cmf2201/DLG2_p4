@@ -40,8 +40,51 @@ class Diffusion:
         logging.info(f"Sampling {n} new images...")
         model.eval()
         with torch.no_grad():
-            pass
-    
+            x = torch.randn((n, 3, self.img_size, self.img_size)).to(self.device)
+            for i in tqdm(reversed(range(1, self.noise_steps))):
+                t = (torch.ones(n) * i).long().to(self.device)
+                predicted_noise = model(x, t)
+                alpha = self.alpha[t][:, None, None, None]
+                alpha_hat = self.alpha_hat[t][:, None, None, None]
+                beta = self.beta[t][:, None, None, None]
+                if i > 1:
+                    noise = torch.randn_like(x)
+                else:
+                    noise = torch.zeros_like(x)
+                x = 1 / torch.sqrt(alpha) * (x - ((1 - alpha) / (torch.sqrt(1 - alpha_hat))) * predicted_noise) + torch.sqrt(beta) * noise
+        model.train()
+        x = (x.clamp(-1, 1) + 1) /2
+        x = (x * 255).type(torch.uint8)
+        return x
+
+
+
+class UNet(nn.Module):
+    def __init__(self, c_in=3, c_out=3, time_dim=256, device="cpu"):
+        super().__init__()
+        self.device = device
+        self.time_dim = time_dim
+        self.inc = DoubleConv(c_in, 64)
+        self.down1 = Down(64, 128)
+        self.sa1 = SelfAttention(128, 32)
+        self.down2 = Down(128, 256)
+        self.sa2 = SelfAttention(256, 16)
+        self.down3 = Down(256, 256)
+        self.sa3 = SelfAttention(256, 8)
+
+        self.bot1 = DoubleConv(256, 512)
+        self.bot2 = DoubleConv(512, 512)
+        self.bot3 = DoubleConv(512, 256)
+
+        self.up1 = Up(512, 256)
+        self.sa4 = SelfAttention(128, 16)
+        self.up2 = Up(256, 128)
+        self.sa5 = SelfAttention(64, 32)
+        self.up3 = Up(128, 64)
+        self.sa6 = SelfAttention(64, 64)
+        self.outc = nn.Conv2d(64, c_out, kernel_size=1)
+
+        
 
 diffuser = Diffusion(noise_steps=10,device="cpu")
 print("Stopping")
