@@ -39,7 +39,7 @@ def extract(v, t, x_shape):
 class GaussianDiffusionTrainer(nn.Module):
     def __init__(self, model, beta_1, beta_T, T):
         super().__init__()
-        is_lin = True
+        is_lin = False
         s = 1e-3
         self.model = model
         self.T = T
@@ -48,11 +48,11 @@ class GaussianDiffusionTrainer(nn.Module):
         if is_lin:
             betas_tensor = torch.linspace(beta_1, beta_T, T)
             alphas = 1 - betas_tensor
-            alphas_cumprod = torch.cumprod(alphas, dim=0)
-            sqrt_alphas_tensor = torch.sqrt(alphas_cumprod)
-            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod)
+            alphas_cumprod = torch.cumprod(alphas, dim=0, dtype=torch.float)
+            sqrt_alphas_tensor = torch.sqrt(alphas_cumprod, dtype=torch.float)
+            sqrt_one_minus_alphas_tensor = torch.sqrt(1 - alphas_cumprod, dtype=torch.float)
         else:
-            range_tensor = torch.linspace(beta_1, beta_T, T + 1)
+            range_tensor = torch.linspace(0, T, T + 1)
 
             alpha_t = torch.cos((range_tensor/T + s)/(1 + s) * (torch.pi / 2)) ** 2
             alpha_0 = alpha_t[0]
@@ -73,6 +73,9 @@ class GaussianDiffusionTrainer(nn.Module):
         self.register_buffer('sqrt_alphas_bar', sqrt_alphas_tensor)
         self.register_buffer('sqrt_one_minus_alphas_bar', sqrt_one_minus_alphas_tensor)
 
+        print(self.sqrt_alphas_bar)
+        print(self.sqrt_one_minus_alphas_bar)
+
     def forward(self, x_0, labels):
         """
         YOUR IMPLEMENTATION HERE!
@@ -92,55 +95,56 @@ class GaussianDiffusionTrainer(nn.Module):
 
         # Compute the x_t (images obtained after corrupting the input images by t times)  (torch.Size([batch_size, 3, 32, 32])
         """batch then iteration"""
-        for batch_i in range(batch_size):
-            # get important values for equation
-            t = timesteps[batch_i]
-            x_O = x_0[batch_i]
-            epsilon = normal[batch_i]
-            sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
-            sqrt_alphas_bar = self.sqrt_alphas_bar[t]
-
-            for j in range(100):
-                t = (j + 1) * 10 - 1
-                sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
-                sqrt_alphas_bar = self.sqrt_alphas_bar[t]
-
-                x_t = sqrt_alphas_bar * x_O + sqrt_one_minus_alphas_bar * epsilon
-
-                pred = self.model(x_t, t, labels[batch_i])
-                pred_img = to_image(pred)
-                pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-ground_truth.png')
-
-                x_t_img = to_image(x_t)
-                x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-pred.png')
-
-                diff = x_t - pred
-                diff_img = to_image(diff)
-                diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-diff.png')
-        '''iteration to batch'''
-        # for i in range(100):
-        #     t = (i + 1) * 10 - 1
+        # for batch_i in range(batch_size):
+        #     # get important values for equation
+        #     t = timesteps[batch_i]
+        #     x_O = x_0[batch_i]
+        #     epsilon = normal[batch_i]
         #     sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
         #     sqrt_alphas_bar = self.sqrt_alphas_bar[t]
 
-        #     x_t = sqrt_alphas_bar * x_0 + sqrt_one_minus_alphas_bar * normal
+        #     for j in range(100):
+        #         t = (j + 1) * 10 - 1
+        #         sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
+        #         sqrt_alphas_bar = self.sqrt_alphas_bar[t]
 
-        #     timesteps = torch.Tensor([t, t, t, t]).to(torch.int).cuda()
+        #         x_t = sqrt_alphas_bar * x_O + sqrt_one_minus_alphas_bar * epsilon
 
-        #     predict = self.model(x_t, timesteps, labels)
+        #         pred = self.model(x_t, t, labels[batch_i])
+        #         pred_img = to_image(pred)
+        #         pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-pred.png')
 
-        #     for batch_i in range(batch_size):
-        #         x_t_bi = x_t[batch_i]
-        #         pred_bi = predict[batch_i]
-        #         diff_bi = abs(x_t_bi - pred_bi)
+        #         x_t_img = to_image(x_t)
+        #         x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-truth.png')
 
-        #         x_t_img = to_image(x_t_bi)
-        #         pred_img = to_image(pred_bi)
-        #         diff_img = to_image(diff_bi)
+        #         diff = x_t - pred
+        #         diff_img = to_image(diff)
+        #         diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-diff.png')
+        '''iteration to batch'''
+        for i in range(100):
+            t = (i + 1) * 10 - 1
+            sqrt_one_minus_alphas_bar = self.sqrt_one_minus_alphas_bar[t]
+            sqrt_alphas_bar = self.sqrt_alphas_bar[t]
 
-        #         x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'truth.png')
-        #         pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'pred.png')
-        #         diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'diff.png')
+            x_t = sqrt_alphas_bar * x_0 + sqrt_one_minus_alphas_bar * normal
+
+            timesteps = torch.Tensor([t, t, t, t]).to(torch.int).cuda()
+
+            # predict = self.model(x_t, timesteps, labels)
+
+
+            for batch_i in range(batch_size):
+                x_t_bi = x_t[batch_i]
+                # pred_bi = predict[batch_i]
+                # diff_bi = abs(x_t_bi - pred_bi)
+
+                x_t_img = to_image(x_t_bi)
+                # pred_img = to_image(pred_bi)
+                # diff_img = to_image(diff_bi)
+
+                x_t_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'truth.png')
+                # pred_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'pred.png')
+                # diff_img.save('ImgOutputs/' + str(batch_i) + '-' + str(t) + '-' + 'diff.png')
 
 
         # Call your diffusion model to get the predict the noise -  t is a random index
