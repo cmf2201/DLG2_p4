@@ -20,7 +20,7 @@ def main(model_config = None):
         "grad_clip": 1.,
         "device": "cuda:0", ### MAKE SURE YOU HAVE A GPU !!!
         "training_load_weight": None,
-        "save_weight_dir": "./Checkpoints/",
+        "save_dir": "./Checkpoints/",
         "test_load_weight": "ckpt_199_.pt",
         "sampled_dir": "./SampledImgs/",
         "sampledNoisyImgName": "NoisyNoGuidenceImgs.png",

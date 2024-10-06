@@ -43,7 +43,7 @@ def train(modelConfig: Dict):
     warmUpScheduler = GradualWarmupScheduler(optimizer=optimizer, multiplier=modelConfig["multiplier"],
                                              warm_epoch=modelConfig["epoch"] // 10, after_scheduler=cosineScheduler)
     trainer = GaussianDiffusionTrainer(
-        net_model, modelConfig["beta_1"], modelConfig["beta_T"], modelConfig["T"]).to(device)
+        net_model, modelConfig["beta_1"], modelConfig["beta_T"], modelConfig["T"],device=device).to(device)
 
     # start training
     for e in range(modelConfig["epoch"]):
@@ -94,7 +94,7 @@ def eval(modelConfig: Dict):
         print("model load weight done.")
         model.eval()
         sampler = GaussianDiffusionSampler(
-            model, modelConfig["beta_1"], modelConfig["beta_T"], modelConfig["T"], w=modelConfig["w"]).to(device)
+            model, modelConfig["beta_1"], modelConfig["beta_T"], modelConfig["T"], w=modelConfig["w"],device=device).to(device)
         # Sampled from standard normal distribution
         noisyImage = torch.randn(
             size=[modelConfig["batch_size"], 3, modelConfig["img_size"], modelConfig["img_size"]], device=device)

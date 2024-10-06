@@ -158,3 +158,6 @@ cython_debug/
 # Custom gitignores
 turRun.sh
 turLog
+src/CIFAR10/*
+src/CheckpointsCondition/*
+src/Checkpoints/*
