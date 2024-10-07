@@ -97,19 +97,19 @@ class GaussianDiffusionSampler(nn.Module):
         """
         x_t = x_T
         for time_step in reversed(range(self.T)):
+            time_step_tensor = torch.tensor([time_step]).cuda()
             print(time_step)
-            x_t = torch.randn_like(labels)
-            predicted_noise = self.model(x_t, time_step)
-            alpha = extract(self.alphas, x_t, labels)
-            alpha_bar = extract(self.alphas_bar, x_t, labels)
-            beta = extract(self.beta, x_t, labels)
+            predicted_noise = self.model(x_t, time_step_tensor, labels)
+            alpha = extract(self.alphas, time_step_tensor, x_t.shape)
+            alpha_bar = extract(self.alphas_bar, time_step_tensor, x_t.shape)
+            beta = extract(self.betas, time_step_tensor, x_t.shape)
             if(time_step > 1):
-                z = torch.randn_like(labels).cuda()
+                z = torch.randn_like(x_T).cuda()
             else:
-                z = torch.zeros_like(labels).cuda()
+                z = torch.zeros_like(x_T).cuda()
             x_t = 1/torch.sqrt(alpha) * (x_t - ((1-alpha)) / (torch.sqrt(1-alpha_bar)) * predicted_noise) + torch.sqrt(beta) * z            
             assert torch.isnan(x_t).int().sum() == 0, "nan in tensor."
         x_0 = x_t
-        return torch.clip(x_0, -1, 1)    
+        return torch.clip(x_0, -1, 1)      
 
 
