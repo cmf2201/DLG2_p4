@@ -22,19 +22,21 @@ class GaussianDiffusionTrainer(nn.Module):
 
         self.model = model
         self.T = T
-        
-        # YOUR IMPLEMENTATION HERE!
-        
-        # Precompute and store the parameters for performing noise addition for a given timestep.
-        
-        # Get the betas in beta_1, beta_T range
-        self.register_buffer('betas', )
+        self.beta_1 = beta_1
+        self.beta_T = beta_T
+        betas = torch.linspace(beta_1, beta_T, T)  
+        self.register_buffer('betas', betas )
         
         # Get alphas and cumprods of alphas
 
+        alphas = 1-self.betas
+        alphas_bar = torch.cumprod(alphas, dim=0)
+        sqrt_alphas_bar = torch.sqrt(alphas_bar)
+        sqrt_one_minus_alphas_bar = torch.sqrt(1-alphas_bar)
+
         # calculations for diffusion q(x_t | x_{t-1}) and others
-        self.register_buffer('sqrt_alphas_bar', )
-        self.register_buffer('sqrt_one_minus_alphas_bar', )
+        self.register_buffer('sqrt_alphas_bar', sqrt_alphas_bar )
+        self.register_buffer('sqrt_one_minus_alphas_bar', sqrt_one_minus_alphas_bar )
 
     def forward(self, x_0, labels):
         """
@@ -45,19 +47,24 @@ class GaussianDiffusionTrainer(nn.Module):
         
         """
         
-        # pick batched random timestep below self.T. (torch.Size([batch_size]))
-        
-        # Generate random noise from normal distribution with 0 mean and 1 variance (torch.Size([batch_size, 3, 32, 32])
-        
-        # Compute the x_t (images obtained after corrupting the input images by t times)  (torch.Size([batch_size, 3, 32, 32])
-                
-        # Call your diffusion model to get the predict the noise -  t is a random index
-        # self.model(x_t, t, labels)
-        
-        # Compute your loss for model prediction and ground truth noise (that you just generated)
-    
+        # Get batch size and image shape
+        batch_size = x_0.shape[0]
+        x_shape = x_0.shape 
+        # Pick batched random timesteps (torch.Size([batch_size]))
+        rand_t = torch.randint(low=1, high=self.T, size=(batch_size,)).to_device(self.device)  
+        # Generate random noise from normal distribution (torch.Size([batch_size, 3, 32, 32]))
+        actual_noise = torch.randn_like(x_0).to_device(self.device)
+        # Extract coefficients for the current timesteps
+        sqrt_alphas_bar_t = extract(self.sqrt_alphas_bar, rand_t, x_shape) 
+        sqrt_one_minus_alphas_bar_t = extract(self.sqrt_one_minus_alphas_bar, rand_t, x_shape) 
+        # Compute x_t for all batch elements
+        x_t = sqrt_alphas_bar_t * x_0 + sqrt_one_minus_alphas_bar_t * actual_noise
+        # Call your diffusion model to predict the noise
+        predicted_noise = self.model(x_t, rand_t, labels) 
+        # Compute the loss between predicted noise and actual noise
+        lossfcn = torch.nn.MSELoss()
+        loss = lossfcn(predicted_noise, actual_noise)
         return loss
-
 
 class GaussianDiffusionSampler(nn.Module):
     def __init__(self, model, beta_1, beta_T, T, w = 0.):
@@ -69,9 +76,16 @@ class GaussianDiffusionSampler(nn.Module):
         ### w = 0 and with label = 0 means no guidence.
         ### w > 0 and label > 0 means guidence. Guidence would be stronger if w is bigger.
         self.w = w
+        self.beta_1 = beta_1
+        self.beta_T = beta_T
+        betas = torch.linspace(beta_1, beta_T, T)          
+        alphas = 1-self.betas
+        alphas_bar = torch.cumprod(alphas, dim=0)
 
-
-        # YOUR IMPLEMENTATION HERE!
+        # calculations for diffusion q(x_t | x_{t-1}) and others
+        self.register_buffer('alphas', alphas )
+        self.register_buffer('alphas_bar', alphas_bar )
+        self.register_buffer('betas', betas )
 
         # Store any constant in register_buffer for quick usage in forward step
 
@@ -84,10 +98,16 @@ class GaussianDiffusionSampler(nn.Module):
         x_t = x_T
         for time_step in reversed(range(self.T)):
             print(time_step)
-
-            # YOUR IMPLEMENTATION HERE!
-            
-            
+            x_t = torch.randn_like(labels)
+            if(time_step > 1):
+                z = torch.randn_like(labels)
+                predicted_noise = self.model(x_t, z, labels)
+                alpha = extract(self.alphas, x_t, labels)
+                alpha_bar = extract(self.alphas_bar, x_t, labels)
+                beta = extract(self.beta, x_t, labels)
+            else:
+                z = torch.zeros_like(labels)
+            x_t = 1/torch.sqrt(alpha) * (x_t - ((1-alpha)) / (torch.sqrt(1-alpha_bar)) * predicted_noise) + torch.sqrt(beta) * z            
             assert torch.isnan(x_t).int().sum() == 0, "nan in tensor."
         x_0 = x_t
         return torch.clip(x_0, -1, 1)   
