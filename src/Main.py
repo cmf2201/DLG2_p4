@@ -3,7 +3,7 @@ from DiffusionFreeGuidence.TrainCondition import train, eval
 
 def main(model_config = None):
     modelConfig = {
-        "state": "train", # or eval
+        "state": "eval", # or eval
         "epoch": 200,
         "batch_size": 80,
         "T": 1000,
@@ -20,12 +20,16 @@ def main(model_config = None):
         "grad_clip": 1.,
         "device": "cuda:0", ### MAKE SURE YOU HAVE A GPU !!!
         "training_load_weight": None,
-        "save_weight_dir": "./Checkpoints/",
+        "save_dir": "./Checkpoints/",
         "test_load_weight": "ckpt_199_.pt",
         "sampled_dir": "./SampledImgs/",
         "sampledNoisyImgName": "NoisyNoGuidenceImgs.png",
         "sampledImgName": "SampledNoGuidenceImgs.png",
-        "nrow": 8
+        "tensor_dir": "./Tensors/",
+        "tensorName": "NoGuidenceData",
+        "nrow": 8,
+        "w": 1.8,
+        "img_num": 50000
         }
     if model_config is not None:
         modelConfig = model_config

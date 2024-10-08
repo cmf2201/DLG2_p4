@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import tqdm
 import numpy as np
 
 
@@ -79,7 +80,7 @@ class GaussianDiffusionSampler(nn.Module):
         self.beta_1 = beta_1
         self.beta_T = beta_T
         betas = torch.linspace(beta_1, beta_T, T)          
-        alphas = 1-self.betas
+        alphas = 1 - betas
         alphas_bar = torch.cumprod(alphas, dim=0)
 
         # calculations for diffusion q(x_t | x_{t-1}) and others
@@ -96,17 +97,16 @@ class GaussianDiffusionSampler(nn.Module):
         
         """
         x_t = x_T
-        for time_step in reversed(range(self.T)):
-            time_step_tensor = torch.tensor([time_step]).cuda()
-            print(time_step)
+        for time_step in tqdm.tqdm(reversed(range(self.T))):
+            time_step_tensor = torch.tensor([time_step]).to(x_T.device)
             predicted_noise = self.model(x_t, time_step_tensor, labels)
             alpha = extract(self.alphas, time_step_tensor, x_t.shape)
             alpha_bar = extract(self.alphas_bar, time_step_tensor, x_t.shape)
             beta = extract(self.betas, time_step_tensor, x_t.shape)
             if(time_step > 1):
-                z = torch.randn_like(x_T).cuda()
+                z = torch.randn_like(x_T).to(x_T.device)
             else:
-                z = torch.zeros_like(x_T).cuda()
+                z = torch.zeros_like(x_T).to(x_t.device)
             x_t = 1/torch.sqrt(alpha) * (x_t - ((1-alpha)) / (torch.sqrt(1-alpha_bar)) * predicted_noise) + torch.sqrt(beta) * z            
             assert torch.isnan(x_t).int().sum() == 0, "nan in tensor."
         x_0 = x_t
