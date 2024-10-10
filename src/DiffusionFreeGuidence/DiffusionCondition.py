@@ -85,9 +85,9 @@ class GaussianDiffusionTrainer(nn.Module):
         batch_size = x_0.shape[0]
         x_shape = x_0.shape 
         # Pick batched random timesteps (torch.Size([batch_size]))
-        rand_t = torch.randint(low=1, high=self.T, size=(batch_size,)).to_device(self.device)  
+        rand_t = torch.randint(low=1, high=self.T, size=(batch_size,)).to(self.device)  
         # Generate random noise from normal distribution (torch.Size([batch_size, 3, 32, 32]))
-        actual_noise = torch.randn_like(x_0).to_device(self.device)
+        actual_noise = torch.randn_like(x_0).to(self.device)
         # Extract coefficients for the current timesteps
         sqrt_alphas_bar_t = extract(self.sqrt_alphas_bar, rand_t, x_shape) 
         sqrt_one_minus_alphas_bar_t = extract(self.sqrt_one_minus_alphas_bar, rand_t, x_shape) 

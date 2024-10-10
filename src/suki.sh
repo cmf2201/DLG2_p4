@@ -18,7 +18,7 @@
 module load miniconda3
 
 source activate
-conda activate patching2
+conda activate lab3
 
 module load cuda
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
