@@ -5,7 +5,7 @@ If you really want to know more about the framwork of DDPM, I have listed some p
 <br>
 <br>
 Lil' Log is also a very nice blog for understanding the details of DDPM, the reference is 
-"https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise."
+"'https://lilianweng.github.io/posts/2021-07-11-diffusion-models/#:~:text=Diffusion%20models%20are%20inspired%20by,data%20samples%20from%20the%20noise'."
 <br>
 <br>
 **HOW TO RUN**
