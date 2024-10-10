@@ -42,6 +42,7 @@ class GaussianDiffusionTrainer(nn.Module):
         s = 1e-3
         self.model = model
         self.T = T
+        self.device = 'cuda:0'
         
         # YOUR IMPLEMENTATION HERE!
         if is_lin:
