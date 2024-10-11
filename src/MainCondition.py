@@ -4,16 +4,16 @@ import torch
 torch.manual_seed(1)
 def main(model_config=None):
     modelConfig = {
-        "state": "train", # or eval
+        "state": "eval", # train or eval
         "epoch": 70,
         "batch_size": 80,
         "T": 500,
         "channel": 128,
         "channel_mult": [1, 2, 2, 2],
         "num_res_blocks": 2,
-        "dropout": 0.15,
-        "lr": 1e-4,
-        "multiplier": 2.5,
+        "dropout": 0.25,
+        "lr": 0.00015,
+        "multiplier": 1.75,
         "beta_1": 1e-4,
         "beta_T": 0.028,
         "img_size": 32,
@@ -22,7 +22,7 @@ def main(model_config=None):
         "w": 1.8,
         "save_dir": "./CheckpointsCondition/",
         "training_load_weight": None,
-        "test_load_weight": "DiffusionConditionWeight.pt",
+        "test_load_weight": "ckpt_69_.pt",
         "sampled_dir": "./SampledImgs/",
         "sampledNoisyImgName": "NoisyGuidenceImgs.png",
         "sampledImgName": "SampledGuidenceImgs.png",

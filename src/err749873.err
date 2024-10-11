@@ -1,0 +1,260 @@
+Loading miniconda3/24.7.1/3q6zf43
+  Loading requirement: gcc-runtime/13.2.0/yimvxxm
+Loading cuda/12.5.1/6wffrw2
+  Loading requirement: libiconv/1.17/pmxhi4x xz/5.4.6/uxouxrg
+    zlib-ng/2.1.5/uctcqfl libxml2/2.10.3/vdqe2g3
+/home/ctnguyen/DLG2_p4/src/DiffusionFreeGuidence/TrainCondition.py:91: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(os.path.join(
+  0%|          | 0/1 [00:00<?, ?it/s]
+0it [00:00, ?it/s][A
+1it [00:00,  2.03it/s][A
+3it [00:00,  5.50it/s][A
+5it [00:00,  8.11it/s][A
+7it [00:00, 10.06it/s][A
+9it [00:01, 11.46it/s][A
+11it [00:01, 12.48it/s][A
+13it [00:01, 13.19it/s][A
+15it [00:01, 13.68it/s][A
+17it [00:01, 14.03it/s][A
+19it [00:01, 14.29it/s][A
+21it [00:01, 14.48it/s][A
+23it [00:01, 14.60it/s][A
+25it [00:02, 14.69it/s][A
+27it [00:02, 14.74it/s][A
+29it [00:02, 14.77it/s][A
+31it [00:02, 14.79it/s][A
+33it [00:02, 14.81it/s][A
+35it [00:02, 14.82it/s][A
+37it [00:02, 14.84it/s][A
+39it [00:03, 14.85it/s][A
+41it [00:03, 14.87it/s][A
+43it [00:03, 14.86it/s][A
+45it [00:03, 14.87it/s][A
+47it [00:03, 14.88it/s][A
+49it [00:03, 14.88it/s][A
+51it [00:03, 14.88it/s][A
+53it [00:04, 14.89it/s][A
+55it [00:04, 14.87it/s][A
+57it [00:04, 14.85it/s][A
+59it [00:04, 14.86it/s][A
+61it [00:04, 14.85it/s][A
+63it [00:04, 14.85it/s][A
+65it [00:04, 14.85it/s][A
+67it [00:04, 14.83it/s][A
+69it [00:05, 14.84it/s][A
+71it [00:05, 14.84it/s][A
+73it [00:05, 14.84it/s][A
+75it [00:05, 14.85it/s][A
+77it [00:05, 14.86it/s][A
+79it [00:05, 14.85it/s][A
+81it [00:05, 14.84it/s][A
+83it [00:06, 14.84it/s][A
+85it [00:06, 14.84it/s][A
+87it [00:06, 14.85it/s][A
+89it [00:06, 14.86it/s][A
+91it [00:06, 14.86it/s][A
+93it [00:06, 14.85it/s][A
+95it [00:06, 14.85it/s][A
+97it [00:06, 14.84it/s][A
+99it [00:07, 14.85it/s][A
+101it [00:07, 14.86it/s][A
+103it [00:07, 14.85it/s][A
+105it [00:07, 14.86it/s][A
+107it [00:07, 14.86it/s][A
+109it [00:07, 14.85it/s][A
+111it [00:07, 14.84it/s][A
+113it [00:08, 14.83it/s][A
+115it [00:08, 14.84it/s][A
+117it [00:08, 14.83it/s][A
+119it [00:08, 14.84it/s][A
+121it [00:08, 14.83it/s][A
+123it [00:08, 14.84it/s][A
+125it [00:08, 14.83it/s][A
+127it [00:08, 14.83it/s][A
+129it [00:09, 14.83it/s][A
+131it [00:09, 14.83it/s][A
+133it [00:09, 14.82it/s][A
+135it [00:09, 14.83it/s][A
+137it [00:09, 14.83it/s][A
+139it [00:09, 14.82it/s][A
+141it [00:09, 14.83it/s][A
+143it [00:10, 14.83it/s][A
+145it [00:10, 14.83it/s][A
+147it [00:10, 14.82it/s][A
+149it [00:10, 14.83it/s][A
+151it [00:10, 14.82it/s][A
+153it [00:10, 14.84it/s][A
+155it [00:10, 14.84it/s][A
+157it [00:11, 14.84it/s][A
+159it [00:11, 14.84it/s][A
+161it [00:11, 14.84it/s][A
+163it [00:11, 14.85it/s][A
+165it [00:11, 14.84it/s][A
+167it [00:11, 14.83it/s][A
+169it [00:11, 14.82it/s][A
+171it [00:11, 14.83it/s][A
+173it [00:12, 14.83it/s][A
+175it [00:12, 14.82it/s][A
+177it [00:12, 14.84it/s][A
+179it [00:12, 14.83it/s][A
+181it [00:12, 14.82it/s][A
+183it [00:12, 14.82it/s][A
+185it [00:12, 14.83it/s][A
+187it [00:13, 14.84it/s][A
+189it [00:13, 14.84it/s][A
+191it [00:13, 14.83it/s][A
+193it [00:13, 14.84it/s][A
+195it [00:13, 14.84it/s][A
+197it [00:13, 14.85it/s][A
+199it [00:13, 14.86it/s][A
+201it [00:13, 14.85it/s][A
+203it [00:14, 14.86it/s][A
+205it [00:14, 14.84it/s][A
+207it [00:14, 14.84it/s][A
+209it [00:14, 14.85it/s][A
+211it [00:14, 14.85it/s][A
+213it [00:14, 14.85it/s][A
+215it [00:14, 14.84it/s][A
+217it [00:15, 14.84it/s][A
+219it [00:15, 14.85it/s][A
+221it [00:15, 14.85it/s][A
+223it [00:15, 14.84it/s][A
+225it [00:15, 14.83it/s][A
+227it [00:15, 14.84it/s][A
+229it [00:15, 14.83it/s][A
+231it [00:15, 14.82it/s][A
+233it [00:16, 14.82it/s][A
+235it [00:16, 14.81it/s][A
+237it [00:16, 14.80it/s][A
+239it [00:16, 14.81it/s][A
+241it [00:16, 14.80it/s][A
+243it [00:16, 14.80it/s][A
+245it [00:16, 14.81it/s][A
+247it [00:17, 14.80it/s][A
+249it [00:17, 14.80it/s][A
+251it [00:17, 14.82it/s][A
+253it [00:17, 14.82it/s][A
+255it [00:17, 14.82it/s][A
+257it [00:17, 14.82it/s][A
+259it [00:17, 14.81it/s][A
+261it [00:18, 14.82it/s][A
+263it [00:18, 14.81it/s][A
+265it [00:18, 14.80it/s][A
+267it [00:18, 14.79it/s][A
+269it [00:18, 14.79it/s][A
+271it [00:18, 14.79it/s][A
+273it [00:18, 14.79it/s][A
+275it [00:18, 14.81it/s][A
+277it [00:19, 14.81it/s][A
+279it [00:19, 14.81it/s][A
+281it [00:19, 14.83it/s][A
+283it [00:19, 14.82it/s][A
+285it [00:19, 14.82it/s][A
+287it [00:19, 14.82it/s][A
+289it [00:19, 14.82it/s][A
+291it [00:20, 14.81it/s][A
+293it [00:20, 14.82it/s][A
+295it [00:20, 14.81it/s][A
+297it [00:20, 14.81it/s][A
+299it [00:20, 14.81it/s][A
+301it [00:20, 14.80it/s][A
+303it [00:20, 14.80it/s][A
+305it [00:20, 14.80it/s][A
+307it [00:21, 14.80it/s][A
+309it [00:21, 14.79it/s][A
+311it [00:21, 14.79it/s][A
+313it [00:21, 14.80it/s][A
+315it [00:21, 14.80it/s][A
+317it [00:21, 14.79it/s][A
+319it [00:21, 14.80it/s][A
+321it [00:22, 14.80it/s][A
+323it [00:22, 14.80it/s][A
+325it [00:22, 14.81it/s][A
+327it [00:22, 14.81it/s][A
+329it [00:22, 14.79it/s][A
+331it [00:22, 14.81it/s][A
+333it [00:22, 14.80it/s][A
+335it [00:23, 14.79it/s][A
+337it [00:23, 14.80it/s][A
+339it [00:23, 14.80it/s][A
+341it [00:23, 14.79it/s][A
+343it [00:23, 14.79it/s][A
+345it [00:23, 14.79it/s][A
+347it [00:23, 14.79it/s][A
+349it [00:23, 14.80it/s][A
+351it [00:24, 14.82it/s][A
+353it [00:24, 14.81it/s][A
+355it [00:24, 14.79it/s][A
+357it [00:24, 14.79it/s][A
+359it [00:24, 14.79it/s][A
+361it [00:24, 14.79it/s][A
+363it [00:24, 14.80it/s][A
+365it [00:25, 14.80it/s][A
+367it [00:25, 14.80it/s][A
+369it [00:25, 14.81it/s][A
+371it [00:25, 14.80it/s][A
+373it [00:25, 14.80it/s][A
+375it [00:25, 14.80it/s][A
+377it [00:25, 14.80it/s][A
+379it [00:25, 14.80it/s][A
+381it [00:26, 14.80it/s][A
+383it [00:26, 14.79it/s][A
+385it [00:26, 14.79it/s][A
+387it [00:26, 14.78it/s][A
+389it [00:26, 14.76it/s][A
+391it [00:26, 14.76it/s][A
+393it [00:26, 14.76it/s][A
+395it [00:27, 14.77it/s][A
+397it [00:27, 14.77it/s][A
+399it [00:27, 14.78it/s][A
+401it [00:27, 14.78it/s][A
+403it [00:27, 14.79it/s][A
+405it [00:27, 14.79it/s][A
+407it [00:27, 14.79it/s][A
+409it [00:28, 14.79it/s][A
+411it [00:28, 14.79it/s][A
+413it [00:28, 14.80it/s][A
+415it [00:28, 14.80it/s][A
+417it [00:28, 14.80it/s][A
+419it [00:28, 14.80it/s][A
+421it [00:28, 14.80it/s][A
+423it [00:28, 14.83it/s][A
+425it [00:29, 14.85it/s][A
+427it [00:29, 14.86it/s][A
+429it [00:29, 14.86it/s][A
+431it [00:29, 14.86it/s][A
+433it [00:29, 14.87it/s][A
+435it [00:29, 14.87it/s][A
+437it [00:29, 14.88it/s][A
+439it [00:30, 14.88it/s][A
+441it [00:30, 14.87it/s][A
+443it [00:30, 14.89it/s][A
+445it [00:30, 14.90it/s][A
+447it [00:30, 14.88it/s][A
+449it [00:30, 14.88it/s][A
+451it [00:30, 14.86it/s][A
+453it [00:30, 14.87it/s][A
+455it [00:31, 14.87it/s][A
+457it [00:31, 14.88it/s][A
+459it [00:31, 14.87it/s][A
+461it [00:31, 14.87it/s][A
+463it [00:31, 14.88it/s][A
+465it [00:31, 14.88it/s][A
+467it [00:31, 14.86it/s][A
+469it [00:32, 14.86it/s][A
+471it [00:32, 14.87it/s][A
+473it [00:32, 14.87it/s][A
+475it [00:32, 14.88it/s][A
+477it [00:32, 14.88it/s][A
+479it [00:32, 14.88it/s][A
+481it [00:32, 14.88it/s][A
+483it [00:33, 14.87it/s][A
+485it [00:33, 14.89it/s][A
+487it [00:33, 14.89it/s][A
+489it [00:33, 14.89it/s][A
+491it [00:33, 14.89it/s][A
+493it [00:33, 14.89it/s][A
+495it [00:33, 14.89it/s][A
+497it [00:33, 14.88it/s][A
+499it [00:34, 14.87it/s][A500it [00:34, 14.64it/s]
+100%|██████████| 1/1 [00:34<00:00, 34.27s/it]100%|██████████| 1/1 [00:34<00:00, 34.27s/it]
