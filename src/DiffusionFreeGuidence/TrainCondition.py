@@ -93,18 +93,18 @@ def eval(modelConfig: Dict):
         model.load_state_dict(ckpt)
         print("model load weight done.")
         model.eval()
-        for i in tqdm(range(int(modelConfig["img_num"]/modelConfig["batch_size"]))):
+        for i in tqdm(range(int(1))): #int(modelConfig["img_num"]/modelConfig["batch_size"]
             sampler = GaussianDiffusionSampler(
                 model, modelConfig["beta_1"], modelConfig["beta_T"], modelConfig["T"], w=modelConfig["w"]).to(device)
             # Sampled from standard normal distribution
             noisyImage = torch.randn(
                 size=[modelConfig["batch_size"], 3, modelConfig["img_size"], modelConfig["img_size"]], device=device)
             saveNoisy = torch.clamp(noisyImage * 0.5 + 0.5, 0, 1)
-            # save_image(saveNoisy, os.path.join(
-            #     modelConfig["sampled_dir"],  modelConfig["sampledNoisyImgName"]), nrow=modelConfig["nrow"])
+            save_image(saveNoisy, os.path.join(
+                modelConfig["sampled_dir"],  modelConfig["sampledNoisyImgName"]), nrow=modelConfig["nrow"])
             sampledImgs = sampler(noisyImage, labels)
             sampledImgs = sampledImgs * 0.5 + 0.5  # [0 ~ 1]
-            torch.save(sampledImgs, os.path.join(
-                modelConfig["tensor_dir"],  modelConfig["tensorName"][:-4] + str(i) + ".pt"))
-            # save_image(sampledImgs, os.path.join(
-            #     modelConfig["sampled_dir"],  modelConfig["sampledImgName"]), nrow=modelConfig["nrow"])
+            # torch.save(sampledImgs, os.path.join(
+            #     modelConfig["tensor_dir"],  modelConfig["tensorName"][:-4] + str(i) + ".pt"))
+            save_image(sampledImgs, os.path.join(
+                modelConfig["sampled_dir"],  modelConfig["sampledImgName"]), nrow=modelConfig["nrow"])
