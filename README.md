@@ -1,7 +1,5 @@
-# rbe474x_p4
+# Using Diffusion Models to Create Additional Data.
 
-**Please do not make a public fork of this repo.**
 
-Entry point is the ipynb file in the repo root directory.
 
 
